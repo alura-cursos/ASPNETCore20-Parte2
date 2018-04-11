@@ -1,0 +1,119 @@
+﻿@{
+    ViewData["Title"] = "Carrinho";
+}
+@model IList<ItemPedido>;
+
+<h3>Meu Carrinho</h3>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+
+        <div class="row">
+            <div class="col-md-6">
+                Item
+            </div>
+            <div class="col-md-2 text-center">
+                Preço Unitário
+            </div>
+            <div class="col-md-2 text-center">
+                Quantidade
+            </div>
+            <div class="col-md-2">
+                <span class="pull-right">
+                    Subtotal
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+
+        @foreach (var item in Model)
+        {
+            
+            <div class="row row-center linha-produto" item-id="@item.Id">
+                <div class="col-md-3">
+                    <img class="img-produto-carrinho" src="/images/produtos/large_@(item.Produto.Codigo).jpg" />
+                </div>
+                <div class="col-md-3">@(item.Produto.Nome)</div>
+                <div class="col-md-2 text-center">R$ @(item.PrecoUnitario)</div>
+                <div class="col-md-2 text-center">
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default">
+                                <span class="glyphicon-minus"></span>
+                            </button>
+                        </span>
+                        <input type="text" value="@(item.Quantidade)"
+                               class="form-control text-center" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-default"
+                                    onclick="clickIncremento(this)">
+                                <span class="glyphicon-plus"></span>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    R$ <span class="pull-right" subtotal>
+                        @(item.Quantidade * item.PrecoUnitario)
+                    </span>
+                </div>
+            </div>
+
+        }
+
+    </div>
+    <div class="panel-footer">
+        <div class="row">
+            <div class="col-md-10">
+                <span numero-itens>
+                    Total: @(Model.Count())
+                    itens
+                </span>
+            </div>
+            <div class="col-md-2">
+                Total: R$ <span class="pull-right" total>
+                    @(Model.Sum(i => i.Quantidade * i.PrecoUnitario))
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="pull-right">
+            <a class="btn btn-success" asp-action="carrossel">
+                Adicionar Produtos
+            </a>
+            <a class="btn btn-success" asp-action="resumo">
+                Finalizar Pedido
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        function clickIncremento(btn) {
+            var linhaDoItem = $(btn).parents('[item-id]');
+            var itemId = $(linhaDoItem).attr('item-id');
+            var novaQtde = $(linhaDoItem).find('input').val();
+
+            var data = {
+                Id: itemId,
+                Quantidade: novaQtde
+            };
+
+            $.ajax({
+                url: '/pedido/updatequantidade',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data)
+            });
+
+            debugger;
+        }
+    </script>
+}
