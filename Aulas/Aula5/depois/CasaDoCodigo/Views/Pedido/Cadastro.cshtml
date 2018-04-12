@@ -1,10 +1,13 @@
 ﻿@{
-    ViewData["Title"] = "Cadastro";
+	ViewData["Title"] = "Cadastro";
 }
-@model Cadastro
-<h3>Cadastro</h3>
-<form asp-action="resumo" method="post">
 
+@model Cadastro
+
+<h3>Cadastro</h3>
+
+<form asp-action="resumo" method="post">
+    
     <div class="panel panel-default">
         <div class="panel-body">
             <div class="col-md-4">
@@ -94,7 +97,9 @@
                     <input type="text" class="form-control" id="cep" placeholder="CEP"
                            asp-for="@Model.CEP">
                     <span asp-validation-for="@Model.CEP" class="text-danger"></span>
+
                 </div>
+
                 <div class="form-group">
                     <a class="btn btn-success" asp-action="carrossel">
                         Continuar Comprando
@@ -109,5 +114,6 @@
             </div>
         </div>
     </div>
+
 
 </form>
