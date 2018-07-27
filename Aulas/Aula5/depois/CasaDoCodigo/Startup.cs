@@ -72,8 +72,7 @@ namespace CasaDoCodigo
             });
 
             ///<image url="$(ItemDir)\middlewares.png"/>
-            serviceProvider.GetService<IDataService>().InicializaDB();
-
+            serviceProvider.GetService<IDataService>().InicializaDB().Wait();
         }
     }
 

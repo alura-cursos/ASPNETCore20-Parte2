@@ -1,4 +1,5 @@
 ﻿using CasaDoCodigo.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace CasaDoCodigo.Repositories
 {
     public interface ICadastroRepository
     {
-        Cadastro Update(int cadastroId, Cadastro novoCadastro);
+        Task<Cadastro> Update(int cadastroId, Cadastro novoCadastro);
     }
 
     public class CadastroRepository : BaseRepository<Cadastro>, ICadastroRepository
@@ -17,10 +18,11 @@ namespace CasaDoCodigo.Repositories
         {
         }
 
-        public Cadastro Update(int cadastroId, Cadastro novoCadastro)
+        public async Task<Cadastro> Update(int cadastroId, Cadastro novoCadastro)
         {
-            var cadastroDB = dbSet.Where(c => c.Id == cadastroId)
-                .SingleOrDefault();
+            var cadastroDB = 
+                await dbSet.Where(c => c.Id == cadastroId)
+                .SingleOrDefaultAsync();
 
             if (cadastroDB == null)
             {
@@ -28,7 +30,7 @@ namespace CasaDoCodigo.Repositories
             }
 
             cadastroDB.Update(novoCadastro);
-            contexto.SaveChanges();
+            await contexto.SaveChangesAsync();
             return cadastroDB;
         }
     }

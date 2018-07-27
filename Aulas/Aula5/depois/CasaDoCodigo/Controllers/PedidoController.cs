@@ -24,26 +24,27 @@ namespace CasaDoCodigo.Controllers
             this.itemPedidoRepository = itemPedidoRepository;
         }
 
-        public IActionResult Carrossel()
+        public async Task<IActionResult> Carrossel()
         {
-            return View(produtoRepository.GetProdutos());
+            return View(await produtoRepository.GetProdutos());
         }
 
-        public IActionResult Carrinho(string codigo)
+        public async Task<IActionResult> Carrinho(string codigo)
         {
             if (!string.IsNullOrEmpty(codigo))
             {
-                pedidoRepository.AddItem(codigo);
+                await pedidoRepository.AddItem(codigo);
             }
 
-            List<ItemPedido> itens = pedidoRepository.GetPedido().Itens;
+            Pedido pedido = await pedidoRepository.GetPedido();
+            List<ItemPedido> itens = pedido.Itens;
             CarrinhoViewModel carrinhoViewModel = new CarrinhoViewModel(itens);
             return base.View(carrinhoViewModel);
         }
 
-        public IActionResult Cadastro()
+        public async Task<IActionResult> Cadastro()
         {
-            var pedido = pedidoRepository.GetPedido();
+            var pedido = await pedidoRepository.GetPedido();
 
             if (pedido == null)
             {
@@ -55,20 +56,20 @@ namespace CasaDoCodigo.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Resumo(Cadastro cadastro)
+        public async Task<IActionResult> Resumo(Cadastro cadastro)
         {
             if (ModelState.IsValid)
             {
-                return View(pedidoRepository.UpdateCadastro(cadastro));
+                return View(await pedidoRepository.UpdateCadastro(cadastro));
             }
             return RedirectToAction("Cadastro");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public UpdateQuantidadeResponse UpdateQuantidade([FromBody]ItemPedido itemPedido)
+        public async Task<UpdateQuantidadeResponse> UpdateQuantidade([FromBody]ItemPedido itemPedido)
         {
-            return pedidoRepository.UpdateQuantidade(itemPedido);
+            return await pedidoRepository.UpdateQuantidade(itemPedido);
         }
     }
 }
