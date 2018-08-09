@@ -1,6 +1,8 @@
 ﻿using CasaDoCodigo.Models;
 using CasaDoCodigo.Models.ViewModels;
+using CasaDoCodigo.Queries;
 using CasaDoCodigo.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -14,14 +16,26 @@ namespace CasaDoCodigo.Controllers
         private readonly IProdutoRepository produtoRepository;
         private readonly IPedidoRepository pedidoRepository;
         private readonly IItemPedidoRepository itemPedidoRepository;
+        private readonly IPedidoQueries pedidoQueries;
+        private readonly IHttpContextAccessor contextAccessor;
 
-        public PedidoController(IProdutoRepository produtoRepository,
+        public PedidoController
+            (IHttpContextAccessor contextAccessor,
+            IProdutoRepository produtoRepository,
             IPedidoRepository pedidoRepository,
-            IItemPedidoRepository itemPedidoRepository)
+            IItemPedidoRepository itemPedidoRepository,
+            IPedidoQueries pedidoQueries)
         {
+            this.contextAccessor = contextAccessor;
             this.produtoRepository = produtoRepository;
             this.pedidoRepository = pedidoRepository;
             this.itemPedidoRepository = itemPedidoRepository;
+            this.pedidoQueries = pedidoQueries;
+        }
+
+        private int? GetPedidoId()
+        {
+            return contextAccessor.HttpContext.Session.GetInt32("pedidoId");
         }
 
         public async Task<IActionResult> Carrossel()
@@ -36,9 +50,11 @@ namespace CasaDoCodigo.Controllers
                 await pedidoRepository.AddItem(codigo);
             }
 
-            Pedido pedido = await pedidoRepository.GetPedido();
-            List<ItemPedido> itens = pedido.Itens;
-            CarrinhoViewModel carrinhoViewModel = new CarrinhoViewModel(itens);
+            CarrinhoViewModel carrinhoViewModel = await pedidoQueries.GetCarrinho(GetPedidoId().Value);
+
+            //Pedido pedido = await pedidoRepository.GetPedido();
+            //List<ItemPedido> itens = pedido.Itens;
+            //CarrinhoViewModel carrinhoViewModel = new CarrinhoViewModel(itens);
             return base.View(carrinhoViewModel);
         }
 

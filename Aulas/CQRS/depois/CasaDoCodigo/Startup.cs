@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CasaDoCodigo.Queries;
 using CasaDoCodigo.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,22 +28,21 @@ namespace CasaDoCodigo
             services.AddDistributedMemoryCache();
             services.AddSession();
 
+            services.Configure<ConnectionStringsConfiguration>(Configuration.GetSection("ConnectionStrings"));
             string connectionString = Configuration.GetConnectionString("Default");
-
+            
             services.AddDbContext<ApplicationContext>(options =>
                 options.UseSqlServer(connectionString)
             );
 
+            services.AddScoped<IPedidoQueries, PedidoQueries>();
+
             services.AddTransient<IDataService, DataService>();
-            services.AddTransient<IProdutoRepository, ProdutoRepository>();
-            services.AddTransient<IPedidoRepository, PedidoRepository>();
-            services.AddTransient<ICadastroRepository, CadastroRepository>();
-            services.AddTransient<IItemPedidoRepository, ItemPedidoRepository>();
-
+            services.AddScoped<IProdutoRepository, ProdutoRepository>();
+            services.AddScoped<IPedidoRepository, PedidoRepository>();
+            services.AddScoped<ICadastroRepository, CadastroRepository>();
+            services.AddScoped<IItemPedidoRepository, ItemPedidoRepository>();
         }
-
-
-
 
 
         // Este método é chamado pelo runtime.
